@@ -1,5 +1,3 @@
-## RAG Q&A CONVERSATIONAL CHATBOT WITH PDF INCLUDING CHAT HISTORY
-
 import streamlit as st
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -21,7 +19,6 @@ load_dotenv()
 
 os.environ["HF_TOKEN"] = os.getenv("HF_TOKEN", "")
 
-# ─── Page Configuration ───────────────────────────────────────────────
 st.set_page_config(
     page_title="PDF Chat Assistant",
     page_icon="📄",
@@ -29,17 +26,14 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ─── Custom CSS for Premium Look ──────────────────────────────────────
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-    /* Global */
     .stApp {
         font-family: 'Inter', sans-serif;
     }
 
-    /* Header */
     .main-header {
         text-align: center;
         padding: 1.5rem 0 0.5rem 0;
@@ -58,7 +52,6 @@ st.markdown("""
         font-weight: 300;
     }
 
-    /* Sidebar styling */
     section[data-testid="stSidebar"] {
         background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%);
     }
@@ -72,14 +65,12 @@ st.markdown("""
         color: #e2e8f0 !important;
     }
 
-    /* Chat message styling */
     .stChatMessage {
         border-radius: 16px !important;
         margin-bottom: 0.75rem !important;
         border: 1px solid rgba(100, 116, 139, 0.12) !important;
     }
 
-    /* Status cards */
     .status-card {
         background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(168,85,247,0.08) 100%);
         border: 1px solid rgba(99,102,241,0.2);
@@ -96,7 +87,6 @@ st.markdown("""
         border-color: rgba(245,158,11,0.25);
     }
 
-    /* Metric pills */
     .metric-row {
         display: flex;
         gap: 0.75rem;
@@ -113,7 +103,6 @@ st.markdown("""
         font-weight: 500;
     }
 
-    /* File chips */
     .file-chip {
         display: inline-flex;
         align-items: center;
@@ -127,7 +116,6 @@ st.markdown("""
         color: #a5b4fc;
     }
 
-    /* Divider */
     .styled-divider {
         height: 1px;
         background: linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent);
@@ -135,7 +123,6 @@ st.markdown("""
         border: none;
     }
 
-    /* Typing animation */
     @keyframes pulse-dot {
         0%, 100% { opacity: 0.3; }
         50% { opacity: 1; }
@@ -152,11 +139,9 @@ st.markdown("""
     .typing-dot:nth-child(2) { animation: pulse-dot 1.2s infinite 0.2s; }
     .typing-dot:nth-child(3) { animation: pulse-dot 1.2s infinite 0.4s; }
 
-    /* Hide default streamlit elements */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
 
-    /* Empty state */
     .empty-state {
         text-align: center;
         padding: 4rem 2rem;
@@ -178,12 +163,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-
-# ─── Initialize Session State ─────────────────────────────────────────
 if "store" not in st.session_state:
     st.session_state.store = {}
 if "chat_display" not in st.session_state:
-    st.session_state.chat_display = []  # list of {"role": ..., "content": ...}
+    st.session_state.chat_display = []
 if "vector_store" not in st.session_state:
     st.session_state.vector_store = None
 if "pdf_names" not in st.session_state:
@@ -193,17 +176,12 @@ if "doc_count" not in st.session_state:
 if "chunk_count" not in st.session_state:
     st.session_state.chunk_count = 0
 
-
-# ─── Cache the embedding model (expensive to load) ────────────────────
 @st.cache_resource(show_spinner=False)
 def load_embeddings():
     return HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
-
 embeddings = load_embeddings()
 
-
-# ─── Sidebar ──────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("## ⚙️ Configuration")
     st.markdown('<div class="styled-divider"></div>', unsafe_allow_html=True)
@@ -243,7 +221,6 @@ with st.sidebar:
         help="Upload one or more PDF files to chat with",
     )
 
-    # Process uploaded files
     if uploaded_files and api_key:
         current_names = sorted([f.name for f in uploaded_files])
         prev_names = sorted(st.session_state.pdf_names)
@@ -252,7 +229,6 @@ with st.sidebar:
             with st.spinner("📑 Processing PDFs..."):
                 documents = []
                 for uploaded_file in uploaded_files:
-                    # Write each file to a unique temp path
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
                         tmp.write(uploaded_file.read())
                         tmp_path = tmp.name
@@ -262,15 +238,13 @@ with st.sidebar:
                         docs = loader.load()
                         documents.extend(docs)
                     finally:
-                        os.unlink(tmp_path)  # clean up temp file
+                        os.unlink(tmp_path)
 
-                # Split documents
                 text_splitter = RecursiveCharacterTextSplitter(
                     chunk_size=500, chunk_overlap=150
                 )
                 splits = text_splitter.split_documents(documents)
 
-                # Create vector store
                 st.session_state.vector_store = Chroma.from_documents(
                     documents=splits, embedding=embeddings
                 )
@@ -280,7 +254,6 @@ with st.sidebar:
 
             st.success(f"✅ Processed {len(current_names)} PDF(s)")
 
-    # Show uploaded file info
     if st.session_state.pdf_names:
         st.markdown('<div class="styled-divider"></div>', unsafe_allow_html=True)
         st.markdown("### 📊 Knowledge Base")
@@ -298,15 +271,12 @@ with st.sidebar:
 
     st.markdown('<div class="styled-divider"></div>', unsafe_allow_html=True)
 
-    # Clear chat button
     if st.button("🗑️ Clear Chat History", use_container_width=True):
         st.session_state.chat_display = []
         if session_id in st.session_state.store:
             del st.session_state.store[session_id]
         st.rerun()
 
-
-# ─── Main Header ──────────────────────────────────────────────────────
 st.markdown(
     """
     <div class="main-header">
@@ -317,7 +287,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ─── Status Indicators ────────────────────────────────────────────────
 if not api_key:
     st.markdown(
         """
@@ -343,12 +312,9 @@ if not st.session_state.vector_store:
     )
     st.stop()
 
-
-# ─── Build the RAG Chain ──────────────────────────────────────────────
 groq = ChatGroq(api_key=api_key, model=model_choice)
 retriever = st.session_state.vector_store.as_retriever()
 
-# History-aware retriever prompt
 contextualize_system_prompt = (
     "Given the chat history and the latest user question, "
     "which might reference context in the chat history, "
@@ -368,7 +334,6 @@ history_aware_retriever = create_history_aware_retriever(
     groq, retriever, contextualize_prompt
 )
 
-# QA prompt
 system_prompt = (
     "You are a helpful assistant for question-answering tasks. "
     "Use the following pieces of retrieved context to answer the question. "
@@ -389,12 +354,10 @@ qa_prompt = ChatPromptTemplate.from_messages(
 qna_chain = create_stuff_documents_chain(groq, qa_prompt)
 rag_chain = create_retrieval_chain(history_aware_retriever, qna_chain)
 
-
 def get_session_history(sid: str) -> BaseChatMessageHistory:
     if sid not in st.session_state.store:
         st.session_state.store[sid] = ChatMessageHistory()
     return st.session_state.store[sid]
-
 
 conversational_rag_chain = RunnableWithMessageHistory(
     rag_chain,
@@ -404,22 +367,16 @@ conversational_rag_chain = RunnableWithMessageHistory(
     output_messages_key="answer",
 )
 
-
-# ─── Render Chat History ──────────────────────────────────────────────
 for msg in st.session_state.chat_display:
     avatar = "🧑‍💻" if msg["role"] == "user" else "🤖"
     with st.chat_message(msg["role"], avatar=avatar):
         st.markdown(msg["content"])
 
-
-# ─── Chat Input ───────────────────────────────────────────────────────
 if user_input := st.chat_input("Ask something about your PDFs..."):
-    # Show user message immediately
     st.session_state.chat_display.append({"role": "user", "content": user_input})
     with st.chat_message("user", avatar="🧑‍💻"):
         st.markdown(user_input)
 
-    # Generate assistant response
     with st.chat_message("assistant", avatar="🤖"):
         with st.spinner("Thinking..."):
             try:
@@ -436,4 +393,3 @@ if user_input := st.chat_input("Ask something about your PDFs..."):
 
     st.session_state.chat_display.append({"role": "assistant", "content": answer})
     st.rerun()
-
