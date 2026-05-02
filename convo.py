@@ -477,7 +477,7 @@ with st.sidebar:
                 documents = [doc for docs in results for doc in docs]
 
                 text_splitter = RecursiveCharacterTextSplitter(
-                    chunk_size=500, chunk_overlap=150
+                    chunk_size=1000, chunk_overlap=200
                 )
                 splits = text_splitter.split_documents(documents)
 
@@ -610,7 +610,10 @@ st.markdown(
 )
 
 groq = ChatGroq(api_key=api_key, model=model_choice)
-retriever = st.session_state.vector_store.as_retriever()
+retriever = st.session_state.vector_store.as_retriever(
+    search_type="mmr",
+    search_kwargs={"k": 8, "fetch_k": 20},
+)
 
 contextualize_system_prompt = (
     "Given the chat history and the latest user question, "
@@ -632,11 +635,13 @@ history_aware_retriever = create_history_aware_retriever(
 )
 
 system_prompt = (
-    "You are a helpful assistant for question-answering tasks. "
-    "Use the following pieces of retrieved context to answer the question. "
-    "If you don't know the answer, say you don't know. "
-    "Keep the answer concise — three sentences maximum."
+    "You are a knowledgeable assistant that answers questions based on the uploaded PDF documents. "
+    "Use the following retrieved context thoroughly to provide accurate, detailed answers. "
+    "Always base your answer on the context provided. "
+    "If the context contains relevant information, use it to give a comprehensive answer. "
+    "Only say you don't know if the context truly contains no relevant information at all."
     "\n\n"
+    "Context from the PDF:\n"
     "{context}"
 )
 
