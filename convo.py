@@ -11,7 +11,8 @@ from dotenv import load_dotenv
 import os
 import tempfile
 import time
-from langchain_community.document_loaders import PyPDFLoader
+from concurrent.futures import ThreadPoolExecutor
+from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
@@ -461,18 +462,19 @@ with st.sidebar:
 
         if current_names != prev_names:
             with st.spinner("📑 Processing PDFs..."):
-                documents = []
-                for uploaded_file in uploaded_files:
+                def load_single_pdf(uploaded_file):
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
                         tmp.write(uploaded_file.read())
                         tmp_path = tmp.name
-
                     try:
-                        loader = PyPDFLoader(tmp_path)
-                        docs = loader.load()
-                        documents.extend(docs)
+                        return PyMuPDFLoader(tmp_path).load()
                     finally:
                         os.unlink(tmp_path)
+
+                with ThreadPoolExecutor(max_workers=min(4, len(uploaded_files))) as pool:
+                    results = pool.map(load_single_pdf, uploaded_files)
+
+                documents = [doc for docs in results for doc in docs]
 
                 text_splitter = RecursiveCharacterTextSplitter(
                     chunk_size=500, chunk_overlap=150
