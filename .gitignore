@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+rag_doc_qna_env/
+venv/
+env/
+.venv/
+
+# Environment variables
+.env
+
+# Streamlit specific
+.streamlit/
+
+# Temporary data files
+*.pdf
+temp.pdf
+*.sqlite3
+chroma/
+vector_store/
