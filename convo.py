@@ -28,7 +28,7 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
     .stApp {
         font-family: 'Inter', sans-serif;
@@ -123,42 +123,276 @@ st.markdown("""
         border: none;
     }
 
-    @keyframes pulse-dot {
-        0%, 100% { opacity: 0.3; }
-        50% { opacity: 1; }
-    }
-    .typing-dot {
-        display: inline-block;
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #818cf8;
-        margin: 0 2px;
-    }
-    .typing-dot:nth-child(1) { animation: pulse-dot 1.2s infinite 0s; }
-    .typing-dot:nth-child(2) { animation: pulse-dot 1.2s infinite 0.2s; }
-    .typing-dot:nth-child(3) { animation: pulse-dot 1.2s infinite 0.4s; }
-
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
 
-    .empty-state {
+    /* ─── Landing Page Hero ─── */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-18px); }
+    }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shimmer {
+        0%   { background-position: -200% center; }
+        100% { background-position: 200% center; }
+    }
+    @keyframes gradientShift {
+        0%   { background-position: 0% 50%; }
+        50%  { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    @keyframes pulse-ring {
+        0%   { transform: scale(0.9); opacity: 0.7; }
+        50%  { transform: scale(1.05); opacity: 0.3; }
+        100% { transform: scale(0.9); opacity: 0.7; }
+    }
+
+    .hero-section {
         text-align: center;
-        padding: 4rem 2rem;
-        color: #64748b;
+        padding: 3rem 1rem 2rem 1rem;
+        position: relative;
+        overflow: hidden;
     }
-    .empty-state .icon {
-        font-size: 3.5rem;
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(ellipse at 30% 20%, rgba(99,102,241,0.06) 0%, transparent 50%),
+                    radial-gradient(ellipse at 70% 80%, rgba(168,85,247,0.05) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .hero-icon {
+        font-size: 4.5rem;
+        animation: float 4s ease-in-out infinite;
         margin-bottom: 1rem;
+        display: inline-block;
+        filter: drop-shadow(0 8px 24px rgba(99,102,241,0.25));
     }
-    .empty-state h3 {
-        color: #94a3b8;
-        font-weight: 500;
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientShift 5s ease infinite;
         margin-bottom: 0.5rem;
+        line-height: 1.15;
     }
-    .empty-state p {
-        color: #64748b;
+
+    .hero-subtitle {
+        color: #94a3b8;
+        font-size: 1.15rem;
+        font-weight: 300;
+        max-width: 550px;
+        margin: 0 auto 2rem auto;
+        line-height: 1.6;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(99,102,241,0.1);
+        border: 1px solid rgba(99,102,241,0.2);
+        border-radius: 999px;
+        padding: 0.4rem 1rem;
+        font-size: 0.8rem;
+        color: #a5b4fc;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* ─── Feature Cards ─── */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem;
+        max-width: 900px;
+        margin: 0 auto 2.5rem auto;
+        padding: 0 1rem;
+    }
+    @media (max-width: 768px) {
+        .features-grid { grid-template-columns: 1fr; }
+    }
+
+    .feature-card {
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(99,102,241,0.12);
+        border-radius: 16px;
+        padding: 1.75rem 1.5rem;
+        text-align: center;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: fadeInUp 0.6s ease-out backwards;
+        position: relative;
+        overflow: hidden;
+    }
+    .feature-card:nth-child(1) { animation-delay: 0.1s; }
+    .feature-card:nth-child(2) { animation-delay: 0.2s; }
+    .feature-card:nth-child(3) { animation-delay: 0.3s; }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        opacity: 0;
+        transition: opacity 0.35s ease;
+    }
+    .feature-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(99,102,241,0.3);
+        box-shadow: 0 12px 40px rgba(99,102,241,0.12);
+    }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+        font-size: 2.2rem;
+        margin-bottom: 0.75rem;
+        display: inline-block;
+    }
+    .feature-title {
+        color: #e2e8f0;
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+    }
+    .feature-desc {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        line-height: 1.55;
+        font-weight: 300;
+    }
+
+    /* ─── How It Works ─── */
+    .steps-section {
+        max-width: 750px;
+        margin: 0 auto 2.5rem auto;
+        padding: 0 1rem;
+    }
+    .steps-title {
+        text-align: center;
+        color: #c4b5fd;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+    .steps-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        position: relative;
+    }
+    @media (max-width: 768px) {
+        .steps-row { flex-direction: column; align-items: center; }
+    }
+    .steps-row::before {
+        content: '';
+        position: absolute;
+        top: 28px;
+        left: 15%;
+        right: 15%;
+        height: 2px;
+        background: linear-gradient(90deg, rgba(99,102,241,0.15), rgba(168,85,247,0.25), rgba(99,102,241,0.15));
+    }
+    @media (max-width: 768px) {
+        .steps-row::before { display: none; }
+    }
+
+    .step-item {
+        text-align: center;
+        flex: 1;
+        position: relative;
+        z-index: 1;
+    }
+    .step-number {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 0.75rem;
+        box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+        position: relative;
+    }
+    .step-number::after {
+        content: '';
+        position: absolute;
+        inset: -5px;
+        border-radius: 50%;
+        border: 2px solid rgba(99,102,241,0.2);
+        animation: pulse-ring 3s ease-in-out infinite;
+    }
+    .step-label {
+        color: #e2e8f0;
         font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    .step-desc {
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 300;
+    }
+
+    /* ─── Tech Stack Bar ─── */
+    .tech-bar {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        max-width: 650px;
+        margin: 0 auto 2rem auto;
+        padding: 0 1rem;
+    }
+    .tech-badge {
+        background: rgba(30, 27, 75, 0.6);
+        border: 1px solid rgba(99,102,241,0.15);
+        border-radius: 8px;
+        padding: 0.35rem 0.85rem;
+        font-size: 0.75rem;
+        color: #818cf8;
+        font-weight: 500;
+        transition: all 0.25s ease;
+    }
+    .tech-badge:hover {
+        border-color: rgba(99,102,241,0.4);
+        background: rgba(99,102,241,0.1);
+        transform: translateY(-2px);
+    }
+
+    /* ─── CTA ─── */
+    .cta-section {
+        text-align: center;
+        padding: 1rem 0 2.5rem 0;
+    }
+    .cta-arrow {
+        display: inline-block;
+        color: #818cf8;
+        font-size: 1.5rem;
+        animation: float 2.5s ease-in-out infinite;
+    }
+    .cta-text {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        font-weight: 400;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -277,6 +511,92 @@ with st.sidebar:
             del st.session_state.store[session_id]
         st.rerun()
 
+if not api_key or not st.session_state.vector_store:
+    st.markdown(
+        """
+        <div class="hero-section">
+            <div class="hero-badge">✨ Powered by RAG &amp; LangChain</div>
+            <br>
+            <span class="hero-icon">📄</span>
+            <div class="hero-title">PDF Chat Assistant</div>
+            <p class="hero-subtitle">
+                Upload your PDF documents and have intelligent, context-aware
+                conversations — powered by retrieval-augmented generation.
+            </p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <div class="feature-title">Smart RAG</div>
+                <div class="feature-desc">Uses vector embeddings and semantic search to find the most relevant context from your documents.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <div class="feature-title">Chat History</div>
+                <div class="feature-desc">Maintains full conversation context so follow-up questions work naturally and intelligently.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <div class="feature-title">Multi-PDF</div>
+                <div class="feature-desc">Upload and query across multiple PDF files simultaneously for comprehensive answers.</div>
+            </div>
+        </div>
+
+        <div class="steps-section">
+            <div class="steps-title">How It Works</div>
+            <div class="steps-row">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Add API Key</div>
+                    <div class="step-desc">Enter your free GROQ key</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Upload PDFs</div>
+                    <div class="step-desc">Drop one or more files</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Start Chatting</div>
+                    <div class="step-desc">Ask anything about them</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tech-bar">
+            <span class="tech-badge">🦜 LangChain</span>
+            <span class="tech-badge">🚀 GROQ</span>
+            <span class="tech-badge">🤗 HuggingFace</span>
+            <span class="tech-badge">🔮 ChromaDB</span>
+            <span class="tech-badge">🎈 Streamlit</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    if not api_key:
+        st.markdown(
+            """
+            <div class="cta-section">
+                <span class="cta-arrow">👈</span>
+                <p class="cta-text">Enter your <strong>GROQ API Key</strong> in the sidebar to get started</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            """
+            <div class="cta-section">
+                <span class="cta-arrow">👈</span>
+                <p class="cta-text">Upload your <strong>PDF files</strong> in the sidebar to begin</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    st.stop()
+
 st.markdown(
     """
     <div class="main-header">
@@ -286,31 +606,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-if not api_key:
-    st.markdown(
-        """
-        <div class="status-card warning">
-            🔐 <strong>API key required</strong> — Enter your GROQ API key in the sidebar to get started.
-            <br><small>Get a free key at <a href="https://console.groq.com" target="_blank">console.groq.com</a></small>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    st.stop()
-
-if not st.session_state.vector_store:
-    st.markdown(
-        """
-        <div class="empty-state">
-            <div class="icon">📤</div>
-            <h3>No documents loaded</h3>
-            <p>Upload PDF files in the sidebar to begin chatting with your documents.</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    st.stop()
 
 groq = ChatGroq(api_key=api_key, model=model_choice)
 retriever = st.session_state.vector_store.as_retriever()
