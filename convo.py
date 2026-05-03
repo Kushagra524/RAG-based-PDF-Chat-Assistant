@@ -418,18 +418,18 @@ def load_embeddings():
 embeddings = load_embeddings()
 
 with st.sidebar:
-    st.markdown("## ⚙️ Configuration")
+    st.markdown("## Configuration")
     st.markdown('<div class="styled-divider"></div>', unsafe_allow_html=True)
 
     api_key = st.text_input(
-        "🔑 GROQ API Key",
+        " GROQ API Key",
         type="password",
         placeholder="gsk_...",
         help="Get your free API key at https://console.groq.com",
     )
 
     model_choice = st.selectbox(
-        "🤖 Model",
+        " Model",
         [
             "llama-3.1-8b-instant",
             "llama-3.3-70b-versatile",
@@ -441,10 +441,10 @@ with st.sidebar:
     )
 
     st.markdown('<div class="styled-divider"></div>', unsafe_allow_html=True)
-    st.markdown("## 📂 Documents")
+    st.markdown("##  Documents")
 
     session_id = st.text_input(
-        "💬 Session ID",
+        " Session ID",
         value="default_session",
         help="Use different session IDs to maintain separate chat histories",
     )
@@ -461,7 +461,7 @@ with st.sidebar:
         prev_names = sorted(st.session_state.pdf_names)
 
         if current_names != prev_names:
-            with st.spinner("📑 Processing PDFs..."):
+            with st.spinner(" Processing PDFs..."):
                 def load_single_pdf(uploaded_file):
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
                         tmp.write(uploaded_file.read())
@@ -488,18 +488,18 @@ with st.sidebar:
                 st.session_state.doc_count = len(documents)
                 st.session_state.chunk_count = len(splits)
 
-            st.success(f"✅ Processed {len(current_names)} PDF(s)")
+            st.success(f" Processed {len(current_names)} PDF(s)")
 
     if st.session_state.pdf_names:
         st.markdown('<div class="styled-divider"></div>', unsafe_allow_html=True)
-        st.markdown("### 📊 Knowledge Base")
+        st.markdown("###  Knowledge Base")
         for name in st.session_state.pdf_names:
             st.markdown(f'<div class="file-chip">📄 {name}</div>', unsafe_allow_html=True)
         st.markdown(
             f"""
             <div class="metric-row">
-                <span class="metric-pill">📃 {st.session_state.doc_count} pages</span>
-                <span class="metric-pill">🧩 {st.session_state.chunk_count} chunks</span>
+                <span class="metric-pill"> {st.session_state.doc_count} pages</span>
+                <span class="metric-pill"> {st.session_state.chunk_count} chunks</span>
             </div>
             """,
             unsafe_allow_html=True,
@@ -507,7 +507,7 @@ with st.sidebar:
 
     st.markdown('<div class="styled-divider"></div>', unsafe_allow_html=True)
 
-    if st.button("🗑️ Clear Chat History", use_container_width=True):
+    if st.button(" Clear Chat History", use_container_width=True):
         st.session_state.chat_display = []
         if session_id in st.session_state.store:
             del st.session_state.store[session_id]
@@ -517,7 +517,7 @@ if not api_key or not st.session_state.vector_store:
     st.markdown(
         """
         <div class="hero-section">
-            <div class="hero-badge">✨ Powered by RAG &amp; LangChain</div>
+            <div class="hero-badge"> Powered by RAG &amp; LangChain</div>
             <br>
             <span class="hero-icon">📄</span>
             <div class="hero-title">PDF Chat Assistant</div>
@@ -529,17 +529,17 @@ if not api_key or not st.session_state.vector_store:
 
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon">🧠</div>
+                <div class="feature-icon"></div>
                 <div class="feature-title">Smart RAG</div>
                 <div class="feature-desc">Uses vector embeddings and semantic search to find the most relevant context from your documents.</div>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">💬</div>
+                <div class="feature-icon"></div>
                 <div class="feature-title">Chat History</div>
                 <div class="feature-desc">Maintains full conversation context so follow-up questions work naturally and intelligently.</div>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">📚</div>
+                <div class="feature-icon"></div>
                 <div class="feature-title">Multi-PDF</div>
                 <div class="feature-desc">Upload and query across multiple PDF files simultaneously for comprehensive answers.</div>
             </div>
@@ -581,7 +581,7 @@ if not api_key or not st.session_state.vector_store:
         st.markdown(
             """
             <div class="cta-section">
-                <span class="cta-arrow">👈</span>
+                <span class="cta-arrow"></span>
                 <p class="cta-text">Enter your <strong>GROQ API Key</strong> in the sidebar to get started</p>
             </div>
             """,
@@ -591,7 +591,7 @@ if not api_key or not st.session_state.vector_store:
         st.markdown(
             """
             <div class="cta-section">
-                <span class="cta-arrow">👈</span>
+                <span class="cta-arrow"></span>
                 <p class="cta-text">Upload your <strong>PDF files</strong> in the sidebar to begin</p>
             </div>
             """,
@@ -602,7 +602,7 @@ if not api_key or not st.session_state.vector_store:
 st.markdown(
     """
     <div class="main-header">
-        <h1>📄 PDF Chat Assistant</h1>
+        <h1> PDF Chat Assistant</h1>
         <p>Upload PDFs and have intelligent conversations with your documents</p>
     </div>
     """,
@@ -689,9 +689,11 @@ if user_input := st.chat_input("Ask something about your PDFs..."):
                 )
                 answer = response["answer"]
             except Exception as e:
-                answer = f"⚠️ An error occurred: {str(e)}"
+                answer = f" An error occurred: {str(e)}"
 
         st.markdown(answer)
 
     st.session_state.chat_display.append({"role": "assistant", "content": answer})
     st.rerun()
+
+
