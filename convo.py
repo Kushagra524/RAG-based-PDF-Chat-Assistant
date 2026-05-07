@@ -433,7 +433,8 @@ with st.sidebar:
         [
             "llama-3.1-8b-instant",
             "llama-3.3-70b-versatile",
-            "gemma2-9b-it"
+            "openai/gpt-oss-120b",
+            "meta-llama/llama-4-scout-17b-16e-instruct"
         ],
         index=0,
         help="Select the LLM to power your assistant",
